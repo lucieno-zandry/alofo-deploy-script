@@ -15,16 +15,18 @@ if (!flock($lock, LOCK_EX | LOCK_NB)) {
 
 // 🔐 OPTIONAL: simple secret protection
 $SECRET = "super-secret-token";
-$headers = getallheaders();
 
-if (!isset($headers['X-Webhook-Token']) || $headers['X-Webhook-Token'] !== $SECRET) {
+if ($_GET['token'] !== $SECRET) {
     http_response_code(403);
-    echo "Forbidden";
     exit;
 }
 
 // 📥 Get payload (Docker Hub / GitHub style)
 $payload = json_decode(file_get_contents('php://input'), true);
+
+if ($payload['repository']['namespace'] !== 'lucienozandry') {
+    exit;
+}
 
 // Try to extract image name
 $image = null;
