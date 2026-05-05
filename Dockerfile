@@ -5,6 +5,7 @@ FROM php:8.2-apache
 RUN apt-get update && apt-get install -y \
     docker.io \
     curl \
+    nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,6 +20,8 @@ COPY . /var/www/html
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html
+
+
 
 # Expose port
 EXPOSE 80

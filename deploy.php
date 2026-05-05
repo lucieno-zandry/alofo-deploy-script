@@ -78,7 +78,7 @@ $image = null;
 
 // Docker Hub webhook format
 if (isset($payload['repository']['repo_name']) && isset($payload['push_data']['tag'])) {
-    $image = $payload['repository']['repo_name'] . ':' . $payload['push_data']['tag'];
+    $image = $payload['repository']['repo_name'] . ':' . ($payload['push_data']['tag'] ?? 'latest');
 }
 
 // Manual trigger via ?image=
