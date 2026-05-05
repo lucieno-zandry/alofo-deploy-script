@@ -15,7 +15,7 @@ RUN a2enmod rewrite
 WORKDIR /var/www/html
 
 # Copy your webhook script (optional if you mount volume)
-# COPY . /var/www/html
+COPY . /var/www/html
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html

@@ -64,7 +64,7 @@ $deployments = [
         "container" => "alofo_fe",
         "command" => "docker run -d \
             -p 4000:3000 \
-            -e VITE_API_BASE_URL=http://102.16.254.6:9000 \
+            -e API_BASE_URL=http://102.16.254.6:9000 \
             --name alofo_fe \
             lucienozandry/alofo-fe:latest"
     ],
@@ -92,7 +92,7 @@ $deployments = [
         "container" => "maboo_fe",
         "command" => "docker run -d \
             -p 443:3000 \
-            -e VITE_API_BASE_URL=http://102.16.254.6:8000 \
+            -e API_BASE_URL=http://102.16.254.6:8000 \
             --name maboo_fe \
             lucienozandry/maboo_fe:latest"
     ],
@@ -101,7 +101,7 @@ $deployments = [
         "container" => "maboo_fe_dev",
         "command" => "docker run -d \
             -p 3000:3000 \
-            -e VITE_API_BASE_URL=http://102.16.254.6:8001 \
+            -e API_BASE_URL=http://102.16.254.6:8001 \
             --name maboo_fe_dev \
             lucienozandry/maboo_fe:dev"
     ],
