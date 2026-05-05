@@ -161,6 +161,13 @@ $deployments = [
         -e API_BASE_URL=http://102.16.254.6:9000 \
         --name alofo_backoffice_fe \
         lucienozandry/alofo-backoffice-fe:latest"
+    ],
+    "lucienozandry/alofo-payment-simulator:latest" => [
+        "container" => "payment_simulator",
+        "command" => "docker run -d \
+        -p 5500:80 \
+        --name payment_simulator \
+        lucienozandry/alofo-payment-simulator:latest"
     ]
 ];
 
