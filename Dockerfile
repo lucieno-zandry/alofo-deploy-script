@@ -21,7 +21,8 @@ COPY . /var/www/html
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html
 
-
+ENV APACHE_RUN_USER=root
+ENV APACHE_RUN_GROUP=root
 
 # Expose port
 EXPOSE 80
