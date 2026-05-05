@@ -69,8 +69,11 @@ if ($_GET['token'] !== $SECRET) {
 // ============================================================
 $payload = json_decode($rawPayload, true);
 
-if ($payload['repository']['namespace'] !== 'lucienozandry') {
+if (isset($payload['repository']['namespace']) && ($payload['repository']['namespace']  !== 'lucienozandry')) {
     logStep("Namespace mismatch: " . ($payload['repository']['namespace'] ?? 'none'), 'ERROR');
+    exit;
+} else if (!isset($_GET['image'])) {
+    logStep("Namespace mismatch and no image param : " . ($payload['repository']['namespace'] ?? 'none'), 'ERROR');
     exit;
 }
 
@@ -147,6 +150,14 @@ $deployments = [
             --name maboo_fe_dev \
             lucienozandry/maboo_fe:dev"
     ],
+    "lucienozandry/alofo-backoffice-fe:latest" => [
+        "container" => "alofo_backoffice_fe",
+        "command" => "docker run -d \
+        -p 4500:3000 \
+        -e API_BASE_URL=http://102.16.254.6:9000 \
+        --name alofo_backoffice_fe \
+        lucienozandry/alofo-backoffice-fe:latest"
+    ]
 ];
 
 if (!isset($deployments[$image])) {
