@@ -69,11 +69,15 @@ if ($_GET['token'] !== $SECRET) {
 // ============================================================
 $payload = json_decode($rawPayload, true);
 
-if (isset($payload['repository']['namespace']) && ($payload['repository']['namespace']  !== 'lucienozandry')) {
-    logStep("Namespace mismatch: " . ($payload['repository']['namespace'] ?? 'none'), 'ERROR');
+$namespace = $payload['repository']['namespace'] ?? null;
+
+if ($namespace !== null && $namespace !== 'lucienozandry') {
+    logStep("Namespace mismatch: $namespace", 'ERROR');
     exit;
-} else if (!isset($_GET['image'])) {
-    logStep("Namespace mismatch and no image param : " . ($payload['repository']['namespace'] ?? 'none'), 'ERROR');
+}
+
+if ($namespace === null && !isset($_GET['image'])) {
+    logStep("No namespace in payload and no 'image' query parameter provided", 'ERROR');
     exit;
 }
 
