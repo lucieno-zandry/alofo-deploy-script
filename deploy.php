@@ -117,7 +117,7 @@ $deployments = [
     "lucienozandry/maboo-api:latest" => [
         "container" => "maboo_api",
         "command" => "docker run --name maboo_api -p 8000:80 \
-            -e APP_URL=http://102.16.254.6:8000 \
+            -e APP_URL=https://maboo.mg/api \
             -v /etc/docker/api/master/storage:/var/www/html/storage \
             -v /etc/docker/api/master/.env:/var/www/html/.env \
             -d lucienozandry/maboo-api:latest"
@@ -126,7 +126,7 @@ $deployments = [
         "container" => "maboo_fe",
         "command" => "docker run -d \
             -p 3000:3000 \
-            -e API_BASE_URL=http://102.16.254.6:8000 \
+            -e API_URL=/api \
             --name maboo_fe \
             lucienozandry/maboo-fe:latest"
     ],
