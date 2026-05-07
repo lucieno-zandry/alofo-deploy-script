@@ -143,8 +143,9 @@ $deployments = [
             lucienozandry/maboo_fe:dev"
     ],
     "lucienozandry/maboo-admin-fe:latest" => [
-        "container" => "alofo_admin_fe",
+        "container" => "maboo_admin_fe",
         "command" => "docker run -d \
+        --network mynet \
         -p 3500:3000 \
         -e API_BASE_URL=https://maboo.mg \
         --name maboo_admin_fe \
