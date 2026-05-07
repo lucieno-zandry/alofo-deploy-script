@@ -108,25 +108,29 @@ logStep("Deploying image: $image");
 $deployments = [
     "lucienozandry/maboo-api:dev" => [
         "container" => "maboo_api_dev",
-        "command" => "docker run --name maboo_api_dev -p 8001:80 \
-            -e APP_URL=http://102.16.254.6:18000 \
-            -v /etc/docker/api/dev/storage:/var/www/html/storage \
-            -v /etc/docker/api/dev/.env:/var/www/html/.env \
-            -d lucienozandry/maboo-api:dev"
+        "command" => "docker run
+        --name maboo_api_dev -p 8001:80 \
+        -e APP_URL=http://102.16.254.6:18000 \
+        -v /etc/docker/api/dev/storage:/var/www/html/storage \
+        -v /etc/docker/api/dev/.env:/var/www/html/.env \
+        -d lucienozandry/maboo-api:dev"
     ],
     "lucienozandry/maboo-api:latest" => [
         "container" => "maboo_api",
-        "command" => "docker run --name maboo_api -p 8000:80 \
-            -e APP_URL=https://maboo.mg/api \
-            -v /etc/docker/api/master/storage:/var/www/html/storage \
-            -v /etc/docker/api/master/.env:/var/www/html/.env \
-            -d lucienozandry/maboo-api:latest"
+        "command" => "docker run \
+        --network mynet \
+        --name maboo_api \
+        -p 8000:80 -e APP_URrage:/var/www/html/storage \
+        -v /etc/docker/api/master/.env:/var/www/html/.env \
+        -d lucienozandry/maboo-api:latestL=https://maboo.mg \
+        -v /etc/docker/api/master/sto"
     ],
     "lucienozandry/maboo-fe:latest" => [
         "container" => "maboo_fe",
         "command" => "docker run -d \
+            --network mynet \
             -p 3000:3000 \
-            -e API_URL=/api \
+            -e API_BASE_URL=https://maboo.mg \
             --name maboo_fe \
             lucienozandry/maboo-fe:latest"
     ],
@@ -138,13 +142,13 @@ $deployments = [
             --name maboo_fe_dev \
             lucienozandry/maboo_fe:dev"
     ],
-    "lucienozandry/maboo-backoffice-fe:latest" => [
-        "container" => "alofo_backoffice_fe",
+    "lucienozandry/maboo-admin-fe:latest" => [
+        "container" => "alofo_admin_fe",
         "command" => "docker run -d \
-        -p 4500:3000 \
-        -e API_BASE_URL=http://102.16.254.6:10000 \
-        --name alofo_backoffice_fe \
-        lucienozandry/alofo-backoffice-fe:latest"
+        -p 3500:3000 \
+        -e API_BASE_URL=https://maboo.mg \
+        --name maboo_admin_fe \
+        lucienozandry/maboo-admin-fe:latest"
     ],
     "lucienozandry/alofo-payment-simulator:maboo" => [
         "container" => "payment_simulator",
