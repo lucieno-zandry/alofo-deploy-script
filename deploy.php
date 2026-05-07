@@ -120,10 +120,10 @@ $deployments = [
         "command" => "docker run \
         --network mynet \
         --name maboo_api \
-        -p 8000:80 -e APP_URrage:/var/www/html/storage \
+        -p 8000:80 -e APP_URL=https://maboo.mg \
+        -v /etc/docker/api/master/storage:/var/www/html/storage \
         -v /etc/docker/api/master/.env:/var/www/html/.env \
-        -d lucienozandry/maboo-api:latestL=https://maboo.mg \
-        -v /etc/docker/api/master/sto"
+        -d lucienozandry/maboo-api:latest"
     ],
     "lucienozandry/maboo-fe:latest" => [
         "container" => "maboo_fe",
