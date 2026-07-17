@@ -1,8 +1,9 @@
 FROM php:8.2-apache
 
-# Install Docker CLI
+# Install Docker CLI and Docker Compose V2 plugin
 RUN apt-get update && apt-get install -y \
     docker.io \
+    docker-compose-v2 \
     curl \
     nano \
     && apt-get clean \

@@ -107,56 +107,22 @@ logStep("Deploying image: $image");
 // ============================================================
 $deployments = [
     "lucienozandry/maboo-api:dev" => [
-        "container" => "maboo_api_dev",
-        "command" => "docker run
-        --name maboo_api_dev -p 8001:80 \
-        -e APP_URL=http://102.16.254.6:18000 \
-        -v /etc/docker/api/dev/storage:/var/www/html/storage \
-        -v /etc/docker/api/dev/.env:/var/www/html/.env \
-        -d lucienozandry/maboo-api:dev"
+        "compose_file" => __DIR__ . "/compose/maboo-api-dev.yml"
     ],
     "lucienozandry/maboo-api:latest" => [
-        "container" => "maboo_api",
-        "command" => "docker run \
-        --network mynet \
-        --name maboo_api \
-        -p 8000:80 -e APP_URL=https://maboo.mg \
-        -v /etc/docker/api/master/storage:/var/www/html/storage \
-        -v /etc/docker/api/master/.env:/var/www/html/.env \
-        -d lucienozandry/maboo-api:latest"
+        "compose_file" => __DIR__ . "/compose/maboo-api-prod.yml"
     ],
     "lucienozandry/maboo-fe:latest" => [
-        "container" => "maboo_fe",
-        "command" => "docker run -d \
-            --network mynet \
-            -p 3000:3000 \
-            -e API_BASE_URL=https://maboo.mg \
-            --name maboo_fe \
-            lucienozandry/maboo-fe:latest"
+        "compose_file" => __DIR__ . "/compose/maboo-fe-prod.yml"
     ],
     "lucienozandry/maboo-fe:dev" => [
-        "container" => "maboo_fe_dev",
-        "command" => "docker run -d \
-            -p 3000:3000 \
-            -e API_BASE_URL=http://102.16.254.6:18000 \
-            --name maboo_fe_dev \
-            lucienozandry/maboo_fe:dev"
+        "compose_file" => __DIR__ . "/compose/maboo-fe-dev.yml"
     ],
     "lucienozandry/maboo-admin-fe:latest" => [
-        "container" => "maboo_admin_fe",
-        "command" => "docker run -d \
-        --network mynet \
-        -p 3500:3000 \
-        -e API_BASE_URL=https://maboo.mg \
-        --name maboo_admin_fe \
-        lucienozandry/maboo-admin-fe:latest"
+        "compose_file" => __DIR__ . "/compose/maboo-admin-fe-prod.yml"
     ],
     "lucienozandry/alofo-payment-simulator:maboo" => [
-        "container" => "payment_simulator",
-        "command" => "docker run -d \
-        -p 5500:80 \
-        --name payment_simulator \
-        lucienozandry/alofo-payment-simulator:latest"
+        "compose_file" => __DIR__ . "/compose/payment-simulator.yml"
     ]
 ];
 
@@ -169,39 +135,33 @@ if (!isset($deployments[$image])) {
 $config = $deployments[$image];
 $container = $config['container'];
 
-// ============================================================
-// EXECUTION STEPS (with detailed logging)
-// ============================================================
-echo "Deploying $image...\n";
-logStep("--- Starting deployment steps ---");
+$composeFile = $config['compose_file'];
 
-// 1. Remove existing container
-logStep("Removing container: $container");
-list($exitCode, $output) = runCommand("docker rm -f $container");
-if ($exitCode !== 0) {
-    logStep("Warning: Container $container could not be removed (maybe not running)", 'WARNING');
-    // Not fatal – we continue
-}
+echo "Deploying $image via Compose...\n";
+logStep("--- Starting Compose deployment steps ---");
 
-// 2. Pull latest image
-logStep("Pulling image: $image");
-list($exitCode, $output) = runCommand("docker pull $image");
+// 1. Pull the latest image defined in the compose file
+logStep("Pulling latest image for compose file: $composeFile");
+list($exitCode, $output) = runCommand("docker compose -f $composeFile pull");
 if ($exitCode !== 0) {
-    logStep("ERROR: Failed to pull image $image. Exiting.", 'ERROR');
-    echo "ERROR: docker pull failed. Check logs.\n";
+    logStep("ERROR: docker compose pull failed.", 'ERROR');
+    echo "ERROR: Docker Compose pull failed. Check logs.\n";
     exit(1);
 }
 
-// 3. Run new container
-logStep("Starting container: $container with command: " . $config['command']);
-list($exitCode, $output) = runCommand($config['command']);
+// 2. Re-create and start the container seamlessly
+logStep("Running docker compose up for: $composeFile");
+list($exitCode, $output) = runCommand("docker compose -f $composeFile up -d");
 if ($exitCode !== 0) {
-    logStep("ERROR: docker run failed with exit code $exitCode", 'ERROR');
+    logStep("ERROR: docker compose up failed with exit code $exitCode", 'ERROR');
+    echo "ERROR: Docker Compose up failed. Check logs.\n";
+    exit(1);
 } else {
-    logStep("Container $container started successfully (short ID may appear above)");
+    logStep("Compose services updated and started successfully.");
 }
 
-// 4. (Optional) Verify container is actually running after a short delay
+// 3. Optional verification step remains exactly the same...
+
 sleep(2);
 logStep("Checking if container $container is running...");
 list($exitCode, $output) = runCommand("docker ps --filter name=$container --format '{{.Names}} {{.Status}}'");

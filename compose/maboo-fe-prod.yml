@@ -1,0 +1,16 @@
+name: maboo-fe-prod
+services:
+  maboo_fe:
+    image: lucienozandry/maboo-fe:latest
+    container_name: maboo_fe
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - API_BASE_URL=https://maboo.mg
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    external: true

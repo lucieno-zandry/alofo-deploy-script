@@ -1,0 +1,35 @@
+name: maboo-api-prod
+services:
+  maboo_api:
+    image: lucienozandry/maboo-api:latest
+    container_name: maboo_api
+    restart: always
+    ports:
+      - "8000:80"
+    environment:
+      - APP_URL=https://maboo.mg
+    volumes:
+      - /etc/docker/api/master/storage:/var/www/html/storage
+      - /etc/docker/api/master/.env:/var/www/html/.env
+    networks:
+      - mynet
+
+  maboo_worker:
+    image: lucienozandry/maboo-api:latest
+    container_name: maboo_worker
+    restart: always
+    stop_grace_period: 1m30s
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    environment:
+      - APP_URL=https://maboo.mg
+    volumes:
+      - /etc/docker/api/master/storage:/var/www/html/storage
+      - /etc/docker/api/master/.env:/var/www/html/.env
+    networks:
+      - mynet
+    depends_on:
+      - maboo_api
+
+networks:
+  mynet:
+    external: true
