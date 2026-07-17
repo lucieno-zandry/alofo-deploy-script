@@ -1,29 +1,43 @@
 FROM php:8.2-apache
 
-# Install Docker CLI and Docker Compose V2 plugin
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    docker.io \
-    docker-compose-v2 \
     curl \
     nano \
-    && apt-get clean \
+    ca-certificates \
+    gnupg \
+    lsb-release \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable mod_rewrite
+# Add Docker's official GPG key and repository
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg \
+        | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
+        > /etc/apt/sources.list.d/docker.list
+
+# Install Docker CLI + Compose plugin
+RUN apt-get update && apt-get install -y \
+    docker-ce-cli \
+    docker-compose-plugin \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Argument for the host's docker group GID
+# Match the host docker group GID
 ARG DOCKER_GID=1002
-# Create a group with that GID and add www-data to it
-RUN groupadd -g $DOCKER_GID docker_host && \
-    usermod -a -G docker_host www-data
+
+RUN groupadd -g ${DOCKER_GID} docker_host && \
+    usermod -aG docker_host www-data
 
 WORKDIR /var/www/html
-COPY . /var/www/html
 
-# Ensure Apache can read the files
+COPY . .
+
 RUN chown -R www-data:www-data /var/www/html
 
-
 EXPOSE 80
+
 CMD ["apache2-foreground"]
