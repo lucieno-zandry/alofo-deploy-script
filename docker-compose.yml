@@ -1,5 +1,6 @@
 services:
   webhook:
+    image: "lucienozandry/alofo-docker-webhook:maboo"
     container_name: "webhook"
     build:
       context: .
@@ -10,7 +11,6 @@ services:
       - "12000:80"
 
     volumes:
-      - .:/var/www/html
       - /var/run/docker.sock:/var/run/docker.sock
 
     restart: unless-stopped
