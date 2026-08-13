@@ -1,4 +1,4 @@
-name: maboo-fe-prod
+name: maboo-admin-fe-prod
 services:
   maboo_fe:
     image: lucienozandry/maboo-admin-fe:latest
